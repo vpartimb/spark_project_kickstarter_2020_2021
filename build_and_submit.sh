@@ -4,7 +4,7 @@
 # It takes as optional parameter the path of the spark directory. If no path is specified
 # it will look for the spark directory in $HOME.
 #
-# Example:  ./build_and_submit.sh WordCount /Users/flo/Documents/packages/spark-2.3.4-bin-hadoop2.7
+# Example:  ./build_and_submit.sh WordCount /Users/flo/Documents/packages/spark-3.0.1-bin-hadoop2.7
 #
 # Paramters:
 #  - $1 : job to execute

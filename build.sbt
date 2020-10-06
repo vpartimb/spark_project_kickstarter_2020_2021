@@ -1,4 +1,4 @@
-name := "spark_project_kickstarter_2019_2020"
+name := "spark_project_kickstarter_2020_2021"
 
 version := "1.0"
 
