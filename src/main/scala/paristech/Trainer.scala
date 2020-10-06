@@ -9,6 +9,7 @@ object Trainer {
   def main(args: Array[String]): Unit = {
 
     val conf = new SparkConf().setAll(Map(
+      "spark.master"-> "local",
       "spark.scheduler.mode" -> "FIFO",
       "spark.speculation" -> "false",
       "spark.reducer.maxSizeInFlight" -> "48m",

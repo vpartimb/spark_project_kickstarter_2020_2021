@@ -16,6 +16,7 @@ object WordCount {
 
     // la conf qui sera utilisée par Spark lorsqu'on exécutera cette fonction
     val conf = new SparkConf().setAll(Map(
+      "spark.master" -> "local",
       "spark.scheduler.mode" -> "FIFO",
       "spark.speculation" -> "false",
       "spark.reducer.maxSizeInFlight" -> "48m",
