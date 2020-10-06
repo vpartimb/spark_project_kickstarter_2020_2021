@@ -4,9 +4,9 @@ version := "1.0"
 
 organization := "paristech"
 
-scalaVersion := "2.11.11"
+scalaVersion := "2.12.10"
 
-val sparkVersion = "2.3.4"
+val sparkVersion = "3.0.1"
 
 libraryDependencies ++= Seq(
   // Spark dependencies. Marked as provided because they must not be included in the uber jar
@@ -20,7 +20,7 @@ libraryDependencies ++= Seq(
   //"com.github.scopt" %% "scopt" % "3.4.0"        // to parse options given to the jar in the spark-submit
 )
 
-// A special option to exclude Scala itself form our assembly JAR, since Spark already bundles Scala.
+// A special option to exclude Scala itself from our assembly JAR, since Spark already bundles Scala.
 assembly / assemblyOption := (assembly / assemblyOption).value.copy(includeScala = false)
 
 // Disable parallel execution because of spark-testing-base

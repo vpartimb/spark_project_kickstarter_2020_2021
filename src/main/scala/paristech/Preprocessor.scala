@@ -10,6 +10,7 @@ object Preprocessor {
     // Des réglages optionnels du job spark. Les réglages par défaut fonctionnent très bien pour ce TP.
     // On vous donne un exemple de setting quand même
     val conf = new SparkConf().setAll(Map(
+      "spark.master" -> "local",
       "spark.scheduler.mode" -> "FIFO",
       "spark.speculation" -> "false",
       "spark.reducer.maxSizeInFlight" -> "48m",
