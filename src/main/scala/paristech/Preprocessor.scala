@@ -175,6 +175,6 @@ object Preprocessor {
 
     dfReady.show()
 
-    dfReady.write.parquet("/mnt/c/Users/vince/Google Drive/MS BGD/Cours/INF729_Hadoop/cours-spark-telecom/prepared_trainingset/")
+    dfReady.write.parquet("/mnt/c/Users/vince/Google Drive/MS BGD/Cours/INF729_Hadoop/spark_project_kickstarter_2020_2021/data/prepared_trainingset/")
   }
 }
