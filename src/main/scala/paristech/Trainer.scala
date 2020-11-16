@@ -2,9 +2,11 @@ package paristech
 
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
-
+import org.apache.log4j.{Level, Logger}
 
 object Trainer {
+
+  Logger.getLogger("org").setLevel(Level.ERROR)
 
   def main(args: Array[String]): Unit = {
 
@@ -26,7 +28,7 @@ object Trainer {
       .config(conf)
       .appName("TP Spark : Trainer")
       .getOrCreate()
-
+    import spark.implicits._
 
     /*******************************************************************************
       *

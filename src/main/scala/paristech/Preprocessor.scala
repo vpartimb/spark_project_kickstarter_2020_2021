@@ -4,8 +4,11 @@ import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.{DataFrame, SaveMode, SparkSession}
+import org.apache.log4j.{Level, Logger}
 
 object Preprocessor {
+
+  Logger.getLogger("org").setLevel(Level.ERROR)
 
   def main(args: Array[String]): Unit = {
 
@@ -120,12 +123,58 @@ object Preprocessor {
       .withColumn("currency2", cleanCurrencyUdf($"currency"))
       .drop("country", "currency")
 
-    // ou encore, en utilisant sql.functions.when:
-    dfNoFutur
-      .withColumn("country2", when($"country" === "False", $"currency").otherwise($"country"))
-      .withColumn("currency2", when($"country".isNotNull && length($"currency") =!= 3, null).otherwise($"currency"))
-      .drop("country", "currency")
+    dfCountry.groupBy("country2", "currency2").count.orderBy($"count".desc).show(50)
 
-    dfNoFutur.write.parquet("/mnt/c/Users/vince/Google Drive/MS BGD/Cours/INF729_Hadoop/cours-spark-telecom/cleaned_data/")
+    // ou encore, en utilisant sql.functions.when:
+//    dfNoFutur
+//      .withColumn("country2", when($"country" === "False", $"currency").otherwise($"country"))
+//      .withColumn("currency2", when($"country".isNotNull && length($"currency") =!= 3, null).otherwise($"currency"))
+//      .drop("country", "currency")
+
+    // Pour aider notre algorithme, on souhaite qu'un même mot écrit en minuscules ou majuscules ne soit pas deux
+    // "entités" différentes. On met tout en minuscules
+    val dfLower: DataFrame = dfCountry
+      .withColumn("name", lower($"name"))
+      .withColumn("desc", lower($"desc"))
+      .withColumn("keywords", lower($"keywords"))
+
+    dfLower.show(50)
+
+    // Les valeurs nulles
+
+    // Remplacer les strings "false" dans currency et country
+    // En observant les colonnes
+    dfLower.groupBy("country2").count.orderBy($"count".desc).show(100)
+    dfLower.groupBy("currency2").count.orderBy($"count".desc).show(100)
+
+    /** FEATURE ENGINEERING: Ajouter et manipuler des colonnes **/
+
+    // a) b) c) features à partir des timestamp
+    val dfDurations: DataFrame = dfLower
+      .withColumn("deadline2", from_unixtime($"deadline"))
+      .withColumn("created_at2", from_unixtime($"created_at"))
+      .withColumn("launched_at2", from_unixtime($"launched_at"))
+      .withColumn("days_campaign", datediff($"deadline2", $"launched_at2")) // datediff requires a dateType
+      .withColumn("hours_prepa", round(($"launched_at" - $"created_at")/3600.0, 3)) // here timestamps are in seconds, there are 3600 seconds in one hour
+      .filter($"hours_prepa" >= 0 && $"days_campaign" >= 0)
+      .drop("created_at", "deadline", "launched_at")
+
+    // d)
+    val dfText = dfDurations
+      .withColumn("text", concat_ws(" ", $"name", $"desc", $"keywords"))
+
+    // e)
+    val dfReady: DataFrame = dfText
+      .filter($"goal" > 0)
+      .na
+      .fill(Map(
+        "days_campaign" -> -1,
+        "hours_prepa" -> -1,
+        "goal" -> -1
+      ))
+
+    dfReady.show()
+
+    dfNoFutur.write.parquet("/mnt/c/Users/vince/Google Drive/MS BGD/Cours/INF729_Hadoop/cours-spark-telecom/prepared_trainingset/")
   }
 }
